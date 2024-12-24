@@ -29,6 +29,11 @@ async function run() {
 
         const assignmentCollection = client.db('assignmentDB').collection('assignment');
 
+        app.get('/assignment', async(req, res) =>{
+            const cursor = assignmentCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
         app.post('/assignment', async(req, res) =>{
             const newAssignment = req.body;
