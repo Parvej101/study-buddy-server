@@ -4,12 +4,13 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+
 // middlewere
 app.use(cors());
 app.use(express.json());
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mzyca.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 
@@ -39,6 +40,12 @@ async function run() {
             const newAssignment = req.body;
             console.log(newAssignment);
             const result = await assignmentCollection.insertOne(newAssignment);
+            res.send(result);
+        })
+
+        app.delete('/assignment/:id', async(req, res) =>{
+            const id = req.params.id;
+            const result = await assignmentCollection.deleteOne({_id: new ObjectId(id)});
             res.send(result);
         })
 
