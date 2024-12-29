@@ -30,24 +30,54 @@ async function run() {
 
         const assignmentCollection = client.db('assignmentDB').collection('assignment');
 
-        app.get('/assignment', async(req, res) =>{
+        app.get('/assignment', async (req, res) => {
             const cursor = assignmentCollection.find();
             const result = await cursor.toArray();
             res.send(result);
         })
 
-        app.post('/assignment', async(req, res) =>{
+        app.post('/assignment', async (req, res) => {
             const newAssignment = req.body;
             console.log(newAssignment);
             const result = await assignmentCollection.insertOne(newAssignment);
             res.send(result);
         })
 
-        app.delete('/assignment/:id', async(req, res) =>{
+        app.delete('/assignment/:id', async (req, res) => {
             const id = req.params.id;
-            const result = await assignmentCollection.deleteOne({_id: new ObjectId(id)});
+            const result = await assignmentCollection.deleteOne({ _id: new ObjectId(id) });
             res.send(result);
         })
+        // Update operation
+
+       app.get('/assignment/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await assignmentCollection.findOne({ _id: new ObjectId(id) });
+            res.send(result);
+        })
+
+        app.put('/assignment/:id', async (req, res) => {
+            try {
+                const {id} = req.params;
+                  console.log("reviced ID", id);
+
+                const updatedAssignment = req.body;
+                const result = await assignmentCollection.updateOne(
+                    { _id: new ObjectId(id) },
+                    { $set: updatedAssignment }
+                );
+                if (result.matchedCount === 0) {
+                    res.status(404).send({ message: 'Assignment not found' });
+                } else {
+                    res.send(result);
+                }
+            } catch (error) {
+                console.error('Error updating assignment:', error);
+                res.status(500).send({ message: 'Internal Server Error' });
+            }
+        });
+      
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
