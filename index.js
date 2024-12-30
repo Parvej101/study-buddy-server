@@ -86,6 +86,13 @@ async function run() {
             console.log(newSubmitAssignment);
             const result = await submitAssignment.insertOne(newSubmitAssignment);
             res.send(result);
+            
+        })
+
+        app.get('/submitAssignment', async (req, res) => {
+            const cursor = submitAssignment.find();
+            const result = await cursor.toArray();
+            res.send(result);
         })
 
 
