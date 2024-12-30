@@ -30,6 +30,8 @@ async function run() {
 
         const assignmentCollection = client.db('assignmentDB').collection('assignment');
 
+        const submitAssignment = client.db('assignmentDB').collection('submitAssignment');
+
         app.get('/assignment', async (req, res) => {
             const cursor = assignmentCollection.find();
             const result = await cursor.toArray();
@@ -50,7 +52,7 @@ async function run() {
         })
         // Update operation
 
-       app.get('/assignment/:id', async (req, res) => {
+        app.get('/assignment/:id', async (req, res) => {
             const id = req.params.id;
             const result = await assignmentCollection.findOne({ _id: new ObjectId(id) });
             res.send(result);
@@ -58,8 +60,8 @@ async function run() {
 
         app.put('/assignment/:id', async (req, res) => {
             try {
-                const {id} = req.params;
-                  console.log("reviced ID", id);
+                const { id } = req.params;
+                console.log("reviced ID", id);
 
                 const updatedAssignment = req.body;
                 const result = await assignmentCollection.updateOne(
@@ -76,7 +78,15 @@ async function run() {
                 res.status(500).send({ message: 'Internal Server Error' });
             }
         });
+
+        // API Endpoint to Submit an Assignment
       
+        app.post('/submitAssignment', async (req, res) => {
+            const newSubmitAssignment = req.body;
+            console.log(newSubmitAssignment);
+            const result = await submitAssignment.insertOne(newSubmitAssignment);
+            res.send(result);
+        })
 
 
         // Send a ping to confirm a successful connection
