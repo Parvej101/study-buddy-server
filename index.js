@@ -52,11 +52,11 @@ async function run() {
         })
         // Update operation
 
-        // app.get('/assignment/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const result = await assignmentCollection.findOne({ _id: new ObjectId(id) });
-        //     res.send(result);
-        // })
+        app.get('/assignment/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await assignmentCollection.findOne({ _id: new ObjectId(id) });
+            res.send(result);
+        })
 
         app.put('/assignment/:id', async (req, res) => {
             try {
@@ -80,13 +80,13 @@ async function run() {
         });
 
         // API Endpoint to Submit an Assignment
-      
+
         app.post('/submitAssignment', async (req, res) => {
             const newSubmitAssignment = req.body;
             console.log(newSubmitAssignment);
             const result = await submitAssignment.insertOne(newSubmitAssignment);
             res.send(result);
-            
+
         })
 
         app.get('/submitAssignment', async (req, res) => {
@@ -94,15 +94,46 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         })
-        
+
         // Pending Assignment API Endpoint
-        
-        app.get('/assignment/pending', async (req, res) => {
-            const result = await assignmentCollection.find({ status: 'Pending' }).toArray();
-            res.send(result);
-        })
 
+        app.get('/submitAssignment/:id', async (req, res) => {
+            const { id } = req.params;
 
+            try {
+                // Query MongoDB using the string ID directly
+                const assignment = await submitAssignment.findOne({ _id: new ObjectId(id) });
+
+                if (!assignment) {
+                    return res.status(404).json({ message: 'Assignment not found' });
+                }
+
+                res.json(assignment);
+            } catch (error) {
+                console.error('Error fetching assignment:', error);
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        });
+
+        // API endpoint to update assignment status and marks
+        const { ObjectId } = require('mongodb');
+
+        // API endpoint to update assignment status and marks
+       app.put('/submitAssignment/:id', async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const options = { upsert: true };
+        const value = req.body;
+        const updateDoc = {
+            $set: {
+                status: value.body.status,
+                marks: value.body.marks,
+                feedback: value.body.feedback,
+            },
+        };
+        const result = await submitAssignment.updateOne(filter, updateDoc, options);
+        res.send(result);
+       });
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
