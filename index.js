@@ -52,11 +52,11 @@ async function run() {
         })
         // Update operation
 
-        app.get('/assignment/:id', async (req, res) => {
-            const id = req.params.id;
-            const result = await assignmentCollection.findOne({ _id: new ObjectId(id) });
-            res.send(result);
-        })
+        // app.get('/assignment/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const result = await assignmentCollection.findOne({ _id: new ObjectId(id) });
+        //     res.send(result);
+        // })
 
         app.put('/assignment/:id', async (req, res) => {
             try {
@@ -94,6 +94,14 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         })
+        
+        // Pending Assignment API Endpoint
+        
+        app.get('/assignment/pending', async (req, res) => {
+            const result = await assignmentCollection.find({ status: 'Pending' }).toArray();
+            res.send(result);
+        })
+
 
 
         // Send a ping to confirm a successful connection
