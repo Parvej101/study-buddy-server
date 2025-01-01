@@ -90,7 +90,7 @@ async function run() {
         })
 
         app.get('/submitAssignment', async (req, res) => {
-            const cursor = submitAssignment.find();
+            const cursor = submitAssignment.find({ status: 'pending' });
             const result = await cursor.toArray();
             res.send(result);
         })
@@ -126,9 +126,9 @@ async function run() {
         const value = req.body;
         const updateDoc = {
             $set: {
-                status: value.body.status,
-                marks: value.body.marks,
-                feedback: value.body.feedback,
+                status: value.status,
+                marks: value.marks,
+                feedback: value.feedback,
             },
         };
         const result = await submitAssignment.updateOne(filter, updateDoc, options);
