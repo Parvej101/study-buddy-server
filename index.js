@@ -89,17 +89,22 @@ async function run() {
 
         })
 
+        // pending Assignment API Endpoint
         app.get('/submitAssignment', async (req, res) => {
             const cursor = submitAssignment.find({ status: 'pending' });
             const result = await cursor.toArray();
             res.send(result);
         })
 
-        // Pending Assignment API Endpoint
+    //    myAttempts API Endpoint
+        app.get('/myAttempts', async (req, res) => {
+            const cursor = submitAssignment.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
         app.get('/submitAssignment/:id', async (req, res) => {
             const { id } = req.params;
-
             try {
                 // Query MongoDB using the string ID directly
                 const assignment = await submitAssignment.findOne({ _id: new ObjectId(id) });
@@ -127,8 +132,8 @@ async function run() {
         const updateDoc = {
             $set: {
                 status: value.status,
-                marks: value.marks,
                 feedback: value.feedback,
+                obtainedMarks: value.obtainedMarks,
             },
         };
         const result = await submitAssignment.updateOne(filter, updateDoc, options);
